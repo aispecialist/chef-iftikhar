@@ -32,7 +32,11 @@ function Navbar() {
             About Me
           </NavLink>
         </li>
-       
+        <li className="nav-item mx-1">
+          <NavLink className="nav-link" to="/foodlist">
+           Food List
+          </NavLink>
+        </li>
         <li className="nav-item dropdown">
           <NavLink
             className="nav-link dropdown-toggle"

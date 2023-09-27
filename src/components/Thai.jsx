@@ -1,106 +1,97 @@
-
-import React from 'react';
-import { useTrail, animated } from 'react-spring';
-import './ProductList.css'; // Import the CSS file for the styles
+import React, { useState } from 'react';
+import thaifood from './datacenter/thaifood';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Pagination from 'react-bootstrap/Pagination';
 
 const Thai = () => {
-  const products = [
-    {
-      id: 1,
-      name: 'Cashew Nut Chicken',
-      category: 'Thai',
-      imageUrl: 't1.webp',
-    },
-    {
-      id: 2,
-      name: 'Beef and Chilli',
-      category: 'Thai',
-      imageUrl: 't2.jpg',
-    },
-    {
-      id: 3,
-      name: 'Oyster Sauce Chicken  Fry',
-      category: 'Thai',
-      imageUrl: 't3.jpg',
-    },
-    {
-      id: 4,
-      name: 'Chicken Teriyaki',
-      category: 'Thai',
-      imageUrl: 't4.jpg',
-    },
-    {
-      id: 5,
-      name: 'Beef Teriyaki Sauce',
-      category: 'Thai',
-      imageUrl: 't5.jpg',
-    },
-    {
-      id: 6,
-      name: 'Chicken cheese Pita Bread',
-      category: 'Thai',
-      imageUrl: 't6.jpg',
-    },
-    {
-      id: 7,
-      name: 'Humas with Pita Bread',
-      category:'Thai',
-      imageUrl: 't7.jpg',
-    },
-    {
-      id: 8,
-      name: 'Mochaikai Chops with Tire Sauce',
-      category: 'Thai',
-      imageUrl: 't8.jpg',
-    },
-    // {
-    //   id: 9,
-    //   name: 'Machai Fish with Tire Sause',
-    //   category: 'Thai',
-    //   imageUrl: 't9.jpg',
-    // },
-    {
-      id: 10,
-      name: 'Pite fish with Skiln sauce',
-      category: 'Thai',
-      imageUrl: 't10.jpg',
-    },
-    
-    
-   
-  ];
+  const itemsPerPage = 6; // Number of items to display per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  // Filter the list of items based on the search query
+  const filteredFood = thaifood.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  // Get unique categories
-  const categories = [...new Set(products.map((product) => product.category))];
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(filteredFood.length / itemsPerPage);
 
-  const trail = useTrail(products.length, {
-    from: { opacity: 0, transform: 'translateX(-20px)' },
-    to: { opacity: 1, transform: 'translateX(0)' },
-  });
+  // Function to handle pagination page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  // Function to handle displaying the recipe
+ const showRecipe = (item) => {
+  setSelectedItem(item);
+};
+
+  // Calculate the range of items to display for the current page
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  // Slice the filtered items based on the current page
+  const currentItems = filteredFood.slice(startIndex, endIndex);
 
   return (
-    <div className="container shadow-sm bg-dark rounded my-4 p-3">
-      {categories.map((category) => (
-        <div key={category} className="category-container">
-          <h2 className='my-2 bg-secondary gTitlefont rounded py-2'>{category}</h2>
-          <div className="row">
-            {products
-              .filter((product) => product.category === category)
-              .map((product, index) => (
-                <animated.div key={product.id} className="col-sm-6  col-md-4 col-lg-3" style={trail[index]}>
-                  <div className="card bg-warning mb-3">
-                    <img src={product.imageUrl} className="card-img-top  m-2 imgl rounded mx-auto d-block" alt={product.name} />
-                    <div className="card-body">
-                      <h5 className="card-title">{product.name}</h5>
-                    
-                    </div>
-                  </div>
-                </animated.div>
-              ))}
-          </div>
+    <Container className="container bg-info bg-gradient text-center rounded my-4 p-3">
+      <h2 className='my-2 shadow-sm gTitlefont bg-info border border-warning rounded py-2'>Thai Food List</h2>
+      <input
+        type="text"
+        placeholder="Search by name"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="form-control mb-3"
+      />
+      <Row>
+        {currentItems.map((item, index) => (
+          <Col key={index} sm={4} md={4} lg={4} className="mb-3">
+            <div className="card">
+              <img
+                src={require(`../${item.imageUrl}`)}
+                alt={item.name}
+                className="card-img-top m-2 imgl rounded mx-auto d-block"
+              />
+              <div className="card-body">
+                <h5 className="card-title">{item.name}</h5>
+                <button
+                  className="btn btn-primary my-3"
+                  onClick={() => showRecipe(item)}
+                >
+                  Show Recipe
+                </button>
+              </div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+      {selectedItem && (
+        <div className="my-3">
+          <h3>{selectedItem.name} Recipe</h3>
+          {/* <p>{selectedItem.recipe}</p>
+           */}
+           <p>Will be updated soon</p>
+          <button
+            className="btn btn-danger"
+            onClick={() => setSelectedItem(null)}
+          >
+            Close Recipe
+          </button>
         </div>
-      ))}
-    </div>
+      )}
+      <Pagination className="justify-content-center">
+        {Array.from({ length: totalPages }).map((_, index) => (
+          <Pagination.Item
+            key={index}
+            active={index + 1 === currentPage}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+    </Container>
   );
 };
 

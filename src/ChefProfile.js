@@ -13,8 +13,7 @@ const ChefProfile = () => {
       <div className="row">
         <div className="col-md-4">
           <img
-            src="chef-profile-picture.jpg"
-            alt="Chef Name"
+            src={require('./images/main/chef-profile-picture.jpg')}            alt="Chef Name"
             className="img-fluid  rounded-circle border border-success p-2 bg-info border-opacity-75"
           />
         </div>
